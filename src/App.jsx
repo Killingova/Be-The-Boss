@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import React, { useState, useRef } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Selector from './components/Selector';
@@ -11,28 +10,53 @@ import GoalPlanner from './components/GoalPlanner';
 import HabitTracker from './components/HabitTracker';
 import TipsSection from './components/TipsSection';
 import ReflectionSection from './components/ReflectionSection';
+import Zeitplan from './components/Zeitplan';
+
+const sampleEvents = {
+  '2024-06-19': {
+    '9:00': { title: 'Meeting', priority: 1 },
+    '14:00': { title: 'Projektarbeit', priority: 2 },
+  },
+  '2024-06-20': {
+    '11:00': { title: 'Workshop', priority: 3 },
+  },
+  // Weitere Beispielereignisse hinzufügen
+};
 
 function App() {
-  const [selectedSection, setSelectedSection] = useState('welcome');
+  const [selectedSection, setSelectedSection] = useState('willkommen');
+  const zeitplanRef = useRef(null);
+
+  const handleSave = () => {
+    const data = zeitplanRef.current.save();
+    console.log('Saved data:', data);
+    // Hier können Sie die Logik zur Speicherung der Daten hinzufügen
+  };
+
+  const handleCancel = () => {
+    console.log('Abgebrochen');
+  };
 
   const renderSection = () => {
     switch (selectedSection) {
-      case 'welcome':
+      case 'willkommen':
         return <WelcomeSection />;
-      case 'daily-planner':
+      case 'tagesplaner':
         return <DailyPlanner />;
-      case 'weekly-planner':
+      case 'wochenplaner':
         return <WeeklyPlanner />;
-      case 'monthly-planner':
+      case 'monatsplaner':
         return <MonthlyPlanner />;
-      case 'goal-planner':
+      case 'zielplaner':
         return <GoalPlanner />;
-      case 'habit-tracker':
+      case 'gewohnheitstracker':
         return <HabitTracker />;
-      case 'tips-section':
+      case 'tipps':
         return <TipsSection />;
-      case 'reflection-section':
+      case 'reflexion':
         return <ReflectionSection />;
+      case 'zeitplan':
+        return <Zeitplan ref={zeitplanRef} events={sampleEvents} />;
       default:
         return <WelcomeSection />;
     }
@@ -46,14 +70,14 @@ function App() {
       }}
     >
       <div className="absolute inset-0 bg-green-950 opacity-65"></div>
-      
+
       <Header />
-      <Selector setSelectedSection={setSelectedSection} />
-
-      <main className="relative z-3 flex flex-col items-center justify-center flex-1 pt-16 text-center">
-        {renderSection()}
-      </main>
-
+      <div className="relative z-10 px-4 flex flex-1 w-full">
+        <div className="flex-1 p-4 mt-4 bg-yellow-900 bg-opacity-30 rounded-lg">
+          {renderSection()}
+        </div>
+        <Selector setSelectedSection={setSelectedSection} selectedSection={selectedSection} />
+      </div>
       <Footer />
     </div>
   );

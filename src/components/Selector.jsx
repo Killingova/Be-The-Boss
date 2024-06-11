@@ -1,52 +1,61 @@
-import React from 'react';
+import React, { useRef, useImperativeHandle } from 'react';
 
-function Selector({ setSelectedSection }) {
+const Selector = React.forwardRef(({ setSelectedSection, selectedSection }, ref) => {
+  const buttonRefs = useRef([]);
+
+  useImperativeHandle(ref, () => ({
+    highlightSelectedButton() {
+      buttonRefs.current.forEach((btn) => {
+        if (btn.innerText.toLowerCase() === selectedSection) {
+          btn.classList.add('text-orange-400');
+        } else {
+          btn.classList.remove('text-orange-400');
+        }
+      });
+    },
+  }));
+
+  const handleButtonClick = (section) => {
+    setSelectedSection(section);
+    buttonRefs.current.forEach((btn) => {
+      if (btn.innerText.toLowerCase() === section) {
+        btn.classList.add('text-orange-400');
+      } else {
+        btn.classList.remove('text-orange-400');
+      }
+    });
+  };
+
+  const sections = [
+    'Willkommen',
+    'Tagesplaner',
+    'Wochenplaner',
+    'Monatsplaner',
+    'Zielplaner',
+    'Gewohnheitstracker',
+    'Tipps',
+    'Reflexion',
+    'Kalender',
+    'Zeitplan',
+  ];
+
   return (
-    <nav className="relative z-10 w-full bg-green-900 bg-opacity-75 text-white p-4">
-      <ul className="flex justify-around">
-        <li>
-          <button onClick={() => setSelectedSection('welcome')} className="hover:text-orange-400">
-            Willkommen
-          </button>
-        </li>
-        <li>
-          <button onClick={() => setSelectedSection('daily-planner')} className="hover:text-orange-400">
-            Tagesplaner
-          </button>
-        </li>
-        <li>
-          <button onClick={() => setSelectedSection('weekly-planner')} className="hover:text-orange-400">
-            Wochenplaner
-          </button>
-        </li>
-        <li>
-          <button onClick={() => setSelectedSection('monthly-planner')} className="hover:text-orange-400">
-            Monatsplaner
-          </button>
-        </li>
-        <li>
-          <button onClick={() => setSelectedSection('goal-planner')} className="hover:text-orange-400">
-            Zielplaner
-          </button>
-        </li>
-        <li>
-          <button onClick={() => setSelectedSection('habit-tracker')} className="hover:text-orange-400">
-            Gewohnheitstracker
-          </button>
-        </li>
-        <li>
-          <button onClick={() => setSelectedSection('tips-section')} className="hover:text-orange-400">
-            Tipps
-          </button>
-        </li>
-        <li>
-          <button onClick={() => setSelectedSection('reflection-section')} className="hover:text-orange-400">
-            Reflexion
-          </button>
-        </li>
+    <nav className="w-48 p-4 border border-orange-400 rounded-md ml-4 flex flex-col items-center">
+      <ul className="flex flex-col gap-4">
+        {sections.map((section, index) => (
+          <li key={section}>
+            <button
+              ref={(el) => (buttonRefs.current[index] = el)}
+              onClick={() => handleButtonClick(section.toLowerCase())}
+              className={`hover:text-orange-400 px-2 ${selectedSection === section.toLowerCase() ? 'text-orange-400' : ''}`}
+            >
+              {section}
+            </button>
+          </li>
+        ))}
       </ul>
     </nav>
   );
-}
+});
 
 export default Selector;

@@ -6,3 +6,11 @@
 body {
   font-family: 'Inter', sans-serif;
 }
+
+nav ul li button {
+  transition: color 0.3s ease;
+}
+
+nav ul li button.text-orange-400 {
+  border-left: 4px solid orange ;
+}
