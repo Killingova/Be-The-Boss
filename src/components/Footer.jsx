@@ -1,7 +1,6 @@
-// src/components/Footer.jsx
 import React from 'react';
 
-const Footer = () => {
+function Footer() {
   return (
     <footer className="relative z-10 text-white text-center p-4 w-full opacity-85">
       <p>
@@ -14,6 +13,6 @@ const Footer = () => {
       </p>
     </footer>
   );
-};
+}
 
 export default Footer;
