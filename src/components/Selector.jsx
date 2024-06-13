@@ -40,7 +40,7 @@ const Selector = React.forwardRef(({ setSelectedSection, selectedSection }, ref)
   ];
 
   return (
-    <nav className="w-48 p-4 border border-orange-400 rounded-md ml-4 flex flex-col items-center">
+    <nav className="w-48 p-4 mx-4 border border-orange-400 rounded-md ml-4 flex flex-col items-center text-[#B7B597]">
       <ul className="flex flex-col gap-4">
         {sections.map((section, index) => (
           <li key={section}>

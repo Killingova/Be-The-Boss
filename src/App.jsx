@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Selector from './components/Selector';
@@ -11,6 +11,8 @@ import HabitTracker from './components/HabitTracker';
 import TipsSection from './components/TipsSection';
 import ReflectionSection from './components/ReflectionSection';
 import Zeitplan from './components/Zeitplan';
+import KalenderBalken from './components/KalenderBalken';
+import Login from './components/Login';
 
 const sampleEvents = {
   '2024-06-19': {
@@ -25,7 +27,17 @@ const sampleEvents = {
 
 function App() {
   const [selectedSection, setSelectedSection] = useState('willkommen');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const zeitplanRef = useRef(null);
+  const loginDialog = useRef(null);
+
+  useEffect(() => {
+    if (selectedSection === 'zeitplan' && zeitplanRef.current) {
+      zeitplanRef.current.scrollToCurrentTime();
+    }
+  }, [selectedSection]);
 
   const handleSave = () => {
     const data = zeitplanRef.current.save();
@@ -35,6 +47,33 @@ function App() {
 
   const handleCancel = () => {
     console.log('Abgebrochen');
+  };
+
+  const handleLoginClick = () => {
+    loginDialog.current.showModal();
+    setErrorMessage('');
+  };
+
+  const handleCloseLogin = () => {
+    loginDialog.current.close();
+    setSelectedSection('willkommen');
+  };
+
+  const handleLogin = (username, password) => {
+    if (username && password.length >= 6) {
+      setIsLoggedIn(true);
+      setUsername(username);
+      loginDialog.current.close();
+      setSelectedSection('willkommen');
+    } else {
+      setErrorMessage('Benutzername oder Passwort ist ungültig.');
+    }
+  };
+
+  const handleLogoutClick = () => {
+    setIsLoggedIn(false);
+    setUsername('');
+    setSelectedSection('willkommen');
   };
 
   const renderSection = () => {
@@ -71,14 +110,28 @@ function App() {
     >
       <div className="absolute inset-0 bg-green-950 opacity-65"></div>
 
-      <Header />
-      <div className="relative z-10 px-4 flex flex-1 w-full">
-        <div className="flex-1 p-4 mt-4 bg-yellow-900 bg-opacity-30 rounded-lg">
+      <Header onLoginClick={handleLoginClick} />
+      <div className="relative z-10 flex flex-1 w-full text">
+        <KalenderBalken />
+        <div className="flex-1 p-4 bg-stone-900 bg-opacity-30 rounded-lg">
           {renderSection()}
         </div>
         <Selector setSelectedSection={setSelectedSection} selectedSection={selectedSection} />
       </div>
       <Footer />
+      <dialog ref={loginDialog} className="rounded-lg p-4 dark:bg-gray-800 dark:text-white">
+        <Login onClose={handleCloseLogin} onLogin={handleLogin} />
+        {errorMessage && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-lg">
+              <p>{errorMessage}</p>
+              <button onClick={() => setErrorMessage('')} className="mt-4 bg-bold-green text-white px-4 py-2 rounded">
+                Schließen
+              </button>
+            </div>
+          </div>
+        )}
+      </dialog>
     </div>
   );
 }
